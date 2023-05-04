@@ -1,5 +1,4 @@
 import { Hotkey as InnerHotkey } from './hotKey';
-import {globalContext} from './di';
 import { hotkeySymbol, IPublicTypeDisposable, IPublicTypeHotkeyCallback, IPublicTypeHotkeyCallbacks, IPublicApiHotkey, innerHotkeySymbol } from './types';
 
 

@@ -155,7 +155,7 @@ function characterFromEvent(e: KeyboardEvent): string {
   // or not.  we should make sure it is always lowercase for comparisons
   // tips: Q29weXJpZ2h0IChjKSAyMDIwLXByZXNlbnQgQWxpYmFiYSBJbmMuIFYy
 
-  // 返回由指定的 UTF-16 代码单元序列创建的字符串 为什噩梦是16进制
+  // 返回由指定的 UTF-16 代码单元序列创建的字符串
   return String.fromCharCode(keyCode).toLowerCase();
 }
 
@@ -175,7 +175,7 @@ function modifiersMatch(modifiers1: string[], modifiers2: string[]): boolean {
 }
 
 /**
- * takes a key event and figures out what the modifiers are
+ * takes a key event and figures out what the modifiers are 当前已经按下去的键，如shift，ctrl
  */
 function eventModifiers(e: KeyboardEvent): string[] {
   const modifiers = [];
@@ -195,7 +195,6 @@ function eventModifiers(e: KeyboardEvent): string[] {
   if (e.metaKey) {
     modifiers.push('meta');
   }
-
   return modifiers;
 }
 
@@ -272,11 +271,9 @@ function getKeyInfo(combination: string, action?: string): KeyInfo {
   let key = '';
   let i: number;
   const modifiers: string[] = [];
-
   // take the keys from this pattern and figure out what the actual
   // pattern is all about
   keys = keysFromString(combination);
-
   for (i = 0; i < keys.length; ++i) {
     key = keys[i];
 
@@ -439,13 +436,13 @@ export class Hotkey implements IHotKey {
     let callback: IPublicTypeHotkeyCallbackConfig;
     const matches: IPublicTypeHotkeyCallbackConfig[] = [];
     const action: string = e.type;
-
     // if there are no events related to this keycode
     if (!this.callBacks[character]) {
       return [];
     }
 
     // if a modifier key is coming up on its own we should allow it
+    // TODO：什么情况modifier是自己出现的
     if (action === 'keyup' && isModifier(character)) {
       modifiers = [character];
     }
@@ -454,15 +451,15 @@ export class Hotkey implements IHotKey {
     // and see if any of them match
     for (i = 0; i < this.callBacks[character].length; ++i) {
       callback = this.callBacks[character][i];
-
       // if a sequence name is not specified, but this is a sequence at
       // the wrong level then move onto the next match
+      // TODO：sequenceName和level控制事件执行的顺序？，在哪传惨控制？
       if (!sequenceName && callback.seq && this.sequenceLevels[callback.seq] !== callback.level) {
         continue;
       }
-
       // if the action we are looking for doesn't match the action we got
       // then we should keep going
+      // TODO？这个action，在bind时如果传惨了，callback中也要这个参数，不然不会被匹配到
       if (action !== callback.action) {
         continue;
       }
@@ -484,11 +481,13 @@ export class Hotkey implements IHotKey {
         matches.push(callback);
       }
     }
+
     return matches;
   }
 
   // 真正的回掉函数
   private handleKey(character: string, modifiers: string[], e: KeyboardEvent): void {
+    // 得到对应按键触发的所有回掉函数
     const callbacks: IPublicTypeHotkeyCallbackConfig[] = this.getMatches(character, modifiers, e);
     let i: number;
     const doNotReset: SequenceLevels = {};
@@ -501,7 +500,6 @@ export class Hotkey implements IHotKey {
         maxLevel = Math.max(maxLevel, callbacks[i].level || 0);
       }
     }
-
     // loop through matching callbacks for this key event
     for (i = 0; i < callbacks.length; ++i) {
       // fire for all sequence callbacks
@@ -551,21 +549,21 @@ export class Hotkey implements IHotKey {
       return;
     }
 
-    // 得到事件序号
+    // 按的是哪个个键，实际返回的就是哪个键的字符串
     const character = characterFromEvent(e);
 
     // no character found then stop
     if (!character) {
       return;
     }
-
     // need to use === for the character check because the character can be 0
+    // TODO：action有神恶魔用
     if (e.type === 'keyup' && this.ignoreNextKeyup === character) {
       this.ignoreNextKeyup = false;
       return;
     }
 
-    // 事件序号，我怀疑eventModifiers(e)是获取已经按下去的健, 事件event
+    // eventModifiers可以知道，当前已经按下去的键，如shift，ctrl
     this.handleKey(character, eventModifiers(e), e);
   }
 
@@ -611,7 +609,6 @@ export class Hotkey implements IHotKey {
   ): void {
     // store a direct mapped reference for use with HotKey.trigger
     this.directMap[`${combination}:${action}`] = callback;
-
     // make sure multiple spaces in a row become a single space
     combination = combination.replace(/\s+/g, ' ');
 
@@ -624,8 +621,12 @@ export class Hotkey implements IHotKey {
       return;
     }
 
+    /**
+      action: "keydown"
+      key: "c"
+      modifiers: ['meta']
+     */
     const info: KeyInfo = getKeyInfo(combination, action);
-
     // make sure to initialize array if this is the first time
     // a callback is added for this key
     this.callBacks[info.key] = this.callBacks[info.key] || [];
