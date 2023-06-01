@@ -1,6 +1,8 @@
 import React from 'react';
 import lodash from 'lodash'
 import { useBoolean, useRequest } from 'ahooks';
+import {res} from '../utils'
+
 
 async function getArticle(params: any): Promise<{ data: string; time: number }> {
   return new Promise((resolve) => {
@@ -13,35 +15,13 @@ async function getArticle(params: any): Promise<{ data: string; time: number }> 
 
 
 
-const cacheRequest = () => {
-    const cacheMap = new Map()
-
-    return async  (request, params, callback, cashKey) => {
-        if (cacheMap.has('xx')) {
-
-            request(params).then(res => {
-                cacheMap.set('xx', res)
-                callback(cacheMap.get('xx'), res)
-            })
-
-            return Promise.resolve(cacheMap.get('xx'))
-        }
-
-        const resData = await request(params)
-        cacheMap.set('xx', resData)
-        return resData
-    }
-}
-
-const res = cacheRequest()
-const res2 = cacheRequest()
 
 
 const Article = () => {
     const callback = (preData, newData) => {
         console.log('xxx-我不用cash，我偏要用新数据', newData);
     }
-  const { data, loading } = useRequest(() => res(getArticle, {params: Math.random() * 10}, callback, 'xxx'), {
+  const { data, loading } = useRequest( () => res(getArticle, {params: Math.random() * 10}, callback, 'xxx'), {
     // cacheKey: "cacheKey-demo"
   });
 
