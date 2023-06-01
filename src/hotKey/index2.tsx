@@ -7,12 +7,12 @@ const HotKeyApp2 = ({setCount, count}) => {
 
 
       useEffect(() => {
-        const ss = hotkey.bind(['shift+7'], (e) => {
+        const ss = hotkey.bind(['command+v'], (e) => {
             e.preventDefault();
             // command+s 快捷键按下时需要执行的逻辑
-            console.log('我这里打印的不提样');
+            console.log('我这里打印的不提样--command+v');
             setCount(count + 1)
-          }, 'keyup')
+          })
           return ss
       }, [count, setCount])
     

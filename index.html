@@ -6,8 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React + TS</title>
   </head>
+  <style>
+          @keyframes marquee {
+            0% {
+              transform: translateX(0); /* 初始位置 */
+            }
+            100% {
+              transform: translateX(-100%); /* 结束位置，根据需要调整跑马灯的滚动方向 */
+            }
+          }
+      .horseRaceLamp {
+            width: fit-content; 
+            white-space: nowrap; /* 禁止文本换行 */
+            animation: marquee 5s linear infinite; /* 跑马灯动画的属性设置 */
+        }
+
+
+  </style>
   <body>
     <div id="root"></div>
+    <div style="width: 50px">
+      <div class="horseRaceLamp">大三大四的撒打算大</div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -315,7 +315,14 @@ function getKeyInfo(combination: string, action?: string): KeyInfo {
  */
 function fireCallback(callback: IPublicTypeHotkeyCallback, e: KeyboardEvent, combo?: string, sequence?: string): void {
 
-  callback(e)
+
+  const activeEl = document.activeElement;
+  console.log('xxx-activeEl', activeEl?.tagName)
+
+  if (activeEl?.tagName === 'BODY') {
+    callback(e)
+  }
+
   // try {
   //   const workspace = globalContext.get('workspace');
   //   const editor = workspace.isActive ? workspace.window.editor : globalContext.get('editor');
